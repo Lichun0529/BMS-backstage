@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const db = require('./config/keys').mongoURI;
 //[搭建路由模块] 6. 引入路由器
 const users = require('./routes/api/users');
+const profiles = require('./routes/api/profiles');
+
 //[搭建注册接口] 1.安装并引入body-parser
 const bodyParser = require('body-parser');
 //[验证token] 1.安装并引入passport
@@ -28,6 +30,7 @@ app.use(bodyParser.urlencoded({extended: true }))
 app.use(bodyParser.json())
 //[搭建路由模块] 7. 使用路由器中间件
 app.use('/api/users',users)
+app.use('/api/profiles',profiles)
 //[验证token] 2.初始化passport
 app.use(passport.initialize())
 //把引入的passport传递给passport.js,把passport的配置抽离
