@@ -25,6 +25,10 @@ const UserSchema = new Schema({
         type: Date,
         default:Date.now()
     },
+    identity:{
+        type: String,
+        require:true
+    }
 })
 //[创建数据模型] 5. 把创建的Schema编译成model
 module.exports = User = mongoose.model('users', UserSchema);
