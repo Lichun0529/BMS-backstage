@@ -108,7 +108,7 @@ router.get('/current',passport.authenticate('jwt',{session:false}),(req,res)=>{
         identity:req.user.identity
     })
 })
-router.get('/all',(req,res)=>{
+router.get('/alluser',(req,res)=>{
     User.find().then(data=>{
         res.json(data)
     })
