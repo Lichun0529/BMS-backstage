@@ -16,7 +16,8 @@ const passport = require('passport');
 
 //[搭建注册接口] 2、实例化express对象
 const app = express();
-const port = process.env.port || 5000 ;
+// const port = process.env.port || 5000 ;
+const port = 5000 ;
 //[搭建注册接口] 3、响应根路径的请求
 app.get("/",(req,res)=>{
     res.send('Hello World')

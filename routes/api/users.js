@@ -19,7 +19,6 @@ const router = express.Router();
 //         msg:'OK'
 //     })
 // })
-
 //[搭建注册接口] 3. 路由模块中添加POST方法监听
 // route POST api/users/register
 // @desc 
@@ -29,7 +28,7 @@ router.post('/register',(req,res)=>{
     //[搭建注册接口] 4.查询数据库中是否已经存在邮箱账户
     User.findOne({email:req.body.email}).then(user=>{
         if(user){
-            return res.status(400).json('已被注册')
+            return res.json({msg:'邮箱已注册',status:0}).status(400)
         }else{
             let avatar = gravatar.url(req.body.email, {s: '200', r: 'pg', d: 'mm'});
             let newUser = new User({
@@ -38,7 +37,7 @@ router.post('/register',(req,res)=>{
                 password: req.body.password,
                 identity: req.body.identity,
                 avatar
-            })  
+            })
             //加密密码
             bcrypt.genSalt(10, function(err, salt) {
                 bcrypt.hash( newUser.password, salt, function(err, hash) {
@@ -46,7 +45,17 @@ router.post('/register',(req,res)=>{
                     //[创建数据模型] 6. 保存到数据库
                     newUser.save()
                     .then(user=>{
-                        res.status(400).json(user)
+                        let rules = {
+                            id:user.id,
+                            name:user.name,
+                            avatar:user.avatar,
+                            identity:user.identity
+                        };
+                        jwt.sign(rules,keys.secretOrKeys,{expiresIn:3600},(err,token)=>{
+                            if(err) throw err;
+                            //Bearer+空格：passport验证方式的固定token格式
+                            res.json({success:true,token:'Bearer '+token})
+                        }) 
                     })
                     .catch(err=>{
                         if (err) return console.error(err);
@@ -63,11 +72,10 @@ router.post('/register',(req,res)=>{
 // @access public
 router.post('/login',(req,res)=>{
     User.findOne({email:req.body.email}).then(data =>{
-        console.log(data);
-        
-        if(!data) return res.status(404).json('账户不存在')
-        //密码验证
-        bcrypt.compare(req.body.password, data.password)
+        if(!data) return res.json({msg:'账户不存在',status:0}).status(404)
+        //身份验证
+        if(req.body.identity == data.identity){
+            bcrypt.compare(req.body.password, data.password)
             .then((isMatch)=> {
                 if(isMatch){
                     let rules = {
@@ -85,12 +93,15 @@ router.post('/login',(req,res)=>{
                         })
                     })
                 }else{
-                    res.json('密码错误')
+                    res.json({msg:'账户或密码有误',status:1}).status(404)
                 }
             })
             .catch(err=>{
                 console.log(err);
             })
+        }else{
+            res.json({msg:'账户或密码有误',status:1}).status(404)
+        }
     })
     
 })
@@ -113,6 +124,7 @@ router.get('/alluser',(req,res)=>{
         res.json(data)
     })
 })
+
 
 //[搭建路由模块] 5. 导出路由器
 module.exports = router
