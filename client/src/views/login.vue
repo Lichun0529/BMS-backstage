@@ -79,7 +79,6 @@
             </div>
 </template>
 <script>
-    // import api from '../request/api'
     export default{
         data(){
             return{

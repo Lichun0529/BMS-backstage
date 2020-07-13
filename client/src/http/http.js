@@ -1,8 +1,12 @@
 import axios from 'axios'
+import router from '../router/index'
 //请求拦截
 
 axios.interceptors.request.use(config =>{
     console.log('请求拦截');
+    if(localStorage.getItem('BMStoken')){
+        config.headers.Authorization = localStorage.getItem('BMStoken');
+    }
     return config
 },err=>{
     return Promise.reject(err)
@@ -10,7 +14,6 @@ axios.interceptors.request.use(config =>{
 //响应拦截
 axios.interceptors.response.use(response =>{
     console.log('响应拦截');
-    
     return response
 },err=>{
     if (err && err.response) {
@@ -20,6 +23,8 @@ axios.interceptors.response.use(response =>{
             break;
           case 401:
               console.log('未授权，请重新登录')
+              localStorage.removeItem('BMStoken')
+              router.push({name:'login'})
             break;
           case 403:
             console.log('拒绝访问')

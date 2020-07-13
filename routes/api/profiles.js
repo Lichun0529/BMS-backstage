@@ -39,7 +39,7 @@ router.get(
             }  
             res.json(data)
         })
-        .catch(err=>{res.status(404).json(err)})
+        .catch(err=>{res.json(err).status(404)})
 })
 
 // route GET api/profile/:id
