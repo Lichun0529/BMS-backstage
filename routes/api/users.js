@@ -84,7 +84,7 @@ router.post('/login',(req,res)=>{
                         avatar:data.avatar,
                         identity:data.identity
                     };
-                    jwt.sign(rules,keys.secretOrKeys,{expiresIn:5},(err,token)=>{
+                    jwt.sign(rules,keys.secretOrKeys,{expiresIn:3600},(err,token)=>{
                         if(err) throw err;
                         //Bearer+空格：passport验证方式的固定token格式
                         res.json({

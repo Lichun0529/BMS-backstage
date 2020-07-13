@@ -3,7 +3,6 @@ import router from '../router/index'
 //请求拦截
 
 axios.interceptors.request.use(config =>{
-    console.log('请求拦截');
     if(localStorage.getItem('BMStoken')){
         config.headers.Authorization = localStorage.getItem('BMStoken');
     }
@@ -13,7 +12,6 @@ axios.interceptors.request.use(config =>{
 })
 //响应拦截
 axios.interceptors.response.use(response =>{
-    console.log('响应拦截');
     return response
 },err=>{
     if (err && err.response) {

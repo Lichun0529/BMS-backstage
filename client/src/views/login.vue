@@ -79,6 +79,7 @@
             </div>
 </template>
 <script>
+    import jwtdecode from 'jwt-decode'
     export default{
         data(){
             return{
@@ -120,17 +121,23 @@
                         password:this.password,
                         identity:this.identity.toLowerCase()
                     }).then(res=>{
-                        console.log(res);
                         if(res.data.status == 1){
                             this.alertStr = 'Please check your email,password and identity';
                             this.showAlert = true;
                             this.showLoading = false;
                             document.body.scrollTop = document.documentElement.scrollTop = 0;//回顶部
                         }else if(res.data.token){
+                            //本地储存token
                             localStorage.setItem('BMStoken',res.data.token)
+                            //解析token并存储用户信息
+                            let userInfo = jwtdecode(res.data.token);
+                            let isAuthenticated = res.data.token ? true : false;
+                            this.$store.dispatch('setAuthenticated',isAuthenticated)
+                            this.$store.dispatch('setUserInfo',userInfo)
                             this.$router.push({
                                 name:'home'
                             })
+                            
                         }
                     })
                 }
