@@ -14,11 +14,13 @@ Vue.use(VueRouter)
   // },
   {
     path: '/login',
-    component:Login
+    component:Login,
+    name:'login'
   },
   {
     path: '/register',
-    component:Register
+    component:Register,
+    name:'register'
   },
   {
     path: '*',
@@ -35,6 +37,15 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+//路由守卫
+router.beforeEach((to,from,next)=>{
+  const isLogin = localStorage.getItem('BMStoken') ? true : false ;
+  if(to.name == 'login' || to.name == 'register' ){
+    next()
+  }else{
+    isLogin ? next() : next({name:'login'})
+  }
 })
 
 export default router

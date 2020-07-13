@@ -120,13 +120,15 @@
                         email:this.email,
                         password:this.password,
                         identity:this.identity.toLowerCase()
-                    })
-                    .then(res=>{
+                    }).then(res=>{
                         console.log(res);
-                        this.alertStr = 'Please check your email,password and identity'
-                        this.showAlert = true;
-                        this.showLoading = false;
-                        if(res.data.token){
+                        if(res.data.status == 1){
+                            this.alertStr = 'Please check your email,password and identity';
+                            this.showAlert = true;
+                            this.showLoading = false;
+                            document.body.scrollTop = document.documentElement.scrollTop = 0;//回顶部
+                        }else if(res.data.token){
+                            localStorage.setItem('BMStoken',res.data.token)
                             this.$router.push({
                                 name:'home'
                             })
