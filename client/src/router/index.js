@@ -4,6 +4,7 @@ import Login from '../views/login.vue'
 import Register from '../views/register.vue'
 import Page404 from '../views/404.vue'
 import Home from '../views/home.vue'
+import userPage from '../views/userPage.vue'
 Vue.use(VueRouter)
 
   const routes = [
@@ -30,6 +31,11 @@ Vue.use(VueRouter)
     path:'/home',
     component:Home,
     name:'home'
+  },
+  {
+    path:'/userPage',
+    component:userPage,
+    name:'userPage'
   }
 ]
 
