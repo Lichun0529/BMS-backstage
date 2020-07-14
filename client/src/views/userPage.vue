@@ -2,11 +2,11 @@
         <div class="main">
             <!-- Profile Card -->
                 <div class="profile-image shadow-inset border border-light bg-primary rounded-circle p-3 mx-auto">
-                    <img src="../assets/bg.jpg" class="card-img-top shadow-soft p-2 border border-light rounded-circle" alt="Neil Avatar">
+                    <img :src="userInfo.avatar" class="card-img-top shadow-soft p-2 border border-light rounded-circle" alt="Neil Avatar">
                 </div>
                 <div class="card-body">
-                    <h3 class="h5 mb-2">Neil Sims</h3>
-                    <span class="h6 font-weight-normal text-gray mb-3">Co-Founder Themesberg</span>
+                    <h3 class="h5 mb-2"><i class="fas fa-user" style="margin-right:1rem"></i>{{userInfo.name}}</h3>
+                    <h3 class="h5 mb-2"><i class="fas fa-id-badge" style="margin-right:1rem"></i>{{userInfo.identity}}</h3>
                 </div>
             <!-- End of Profile Card -->
         </div>
@@ -16,12 +16,12 @@
          name:'userPage',
          data(){
              return{
-                 userName:''
+                 userInfo:''
              }
          },
          created(){
              let userInfo = this.$store.getters.userInfo;
-             this.userName = userInfo.name;
+             this.userInfo = userInfo;
          }
      }
 </script>

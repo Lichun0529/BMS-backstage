@@ -3,39 +3,23 @@ import VueRouter from 'vue-router'
 import Login from '../views/login.vue'
 import Register from '../views/register.vue'
 import Page404 from '../views/404.vue'
-import Home from '../views/home.vue'
+import Index from '../views/index.vue'
 import userPage from '../views/userPage.vue'
 Vue.use(VueRouter)
 
   const routes = [
-  // {
-  //   path: '/',
-  //   name: 'Home',
-  //   // component: Home
-  // },
+  {path: '/login',component:Login,name:'login'},
+  {path: '/register',component:Register,name:'register'},
+  {path: '*',component:Page404,name:'page404'},
+  {path: '/', redirect: '/index'},
   {
-    path: '/login',
-    component:Login,
-    name:'login'
-  },
-  {
-    path: '/register',
-    component:Register,
-    name:'register'
-  },
-  {
-    path: '*',
-    component:Page404
-  },
-  {
-    path:'/home',
-    component:Home,
-    name:'home'
-  },
-  {
-    path:'/userPage',
-    component:userPage,
-    name:'userPage'
+    path:'/index',
+    component:Index,
+    name:'index',
+    children:[
+      {path:'/userpage',name:'userpage',component:userPage},
+      {path: '/billings',name:'billings',component:userPage},
+    ]
   }
 ]
 

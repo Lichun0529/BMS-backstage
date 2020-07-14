@@ -178,7 +178,7 @@
                                 this.countdown--
                                 if(this.countdown == 0){
                                     this.$router.push({
-                                        name:'home'
+                                        name:'index'
                                     })
                                 }
                             }, 1000);

@@ -135,7 +135,7 @@
                             this.$store.dispatch('setAuthenticated',isAuthenticated)
                             this.$store.dispatch('setUserInfo',userInfo)
                             this.$router.push({
-                                name:'home'
+                                name:'index'
                             })
                             
                         }

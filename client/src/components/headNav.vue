@@ -4,12 +4,9 @@
             <div class="icon icon-shape icon-lg bg-soft shadow-inset border border-light rounded-circle logo">
                 <img class="navbar-brand-dark" src="../assets/logo.png" alt="Logo light">
             </div>
-            <h3 class="col-md-7 col-lg-9 col-sm-7">Found Management System</h3>
+            <h3 class="col-md-7 col-lg-9 col-sm-7">Fund Management System</h3>
             <div class="col-md-2 col-lg-2 col-sm-2">
                 <div class="avatar">
-                    <!-- <div class="col-md-6 col-lg-6 col-sm-6">
-                        头像
-                    </div> -->
                     <img src="../assets/404.png" alt="" class="">
                     <div class="welcome">
                         <span >Welcom</span>
@@ -21,24 +18,21 @@
                                 <span class="fas fa-angle-down ml-2 dropdown-arrow-lc"></span>
                             </li>
                             <li>
+                                <!-- <ul class="dropdown-menu">
+                                    <li @click="showInfo" v-for="(item,i) in dropdownItems" :key="i">
+                                        <a class="dropdown-item" >{{item.name}}</a>
+                                    </li>
+                                </ul> -->
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="../../html/pages/about.html">About</a></li>
-                                    <li><a class="dropdown-item" href="../../html/pages/pricing.html">Sign Out</a></li>
+                                    <li @click="showInfo">
+                                        <a class="dropdown-item font-weight-bold" >Information</a>
+                                    </li>
+                                    <li @click="signOut">
+                                        <a class="dropdown-item font-weight-bold" style="color:#A91E2C">Sign Out</a>
+                                    </li>
                                 </ul>
                             </li>
                         </ul>
-                        
-                        <!-- <ul class="navbar-nav navbar-nav-hover">
-                            <li class="nav-item dropdown">
-                                <a href="#" class="nav-link" data-toggle="dropdown">
-                                    <span class="fas fa-angle-down nav-link-arrow ml-2"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="../../html/pages/about.html">About</a></li>
-                                    <li><a class="dropdown-item" href="../../html/pages/pricing.html">Sign Out</a></li>
-                                </ul>
-                            </li>
-                        </ul> -->
                     </div>
                 </div>
             </div>
@@ -50,13 +44,24 @@
          name:'headNav',
          data(){
              return{
-                 userName:''
+                 userName:'',
+                 dropdownItems:[
+                     {name:'Information',path:''},
+                     {name:'Sign Out',path:''}
+                ]
              }
          },
          created(){
              let userInfo = this.$store.getters.userInfo
-             console.log(userInfo);
              this.userName = userInfo.name;
+         },
+         methods:{
+             showInfo(){
+                 this.$router.push('userpage').catch(()=>{})
+             },
+             signOut(){
+                 this.$router.push('login').catch(()=>{})
+             }
          }
      }
 </script>
