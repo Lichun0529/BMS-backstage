@@ -31,7 +31,9 @@
          },
          watch:{
              $route(){
+                 //当前路由路径传给左侧栏
                  this.path = this.$route.path;
+                 console.log(this.path);
              }
          },
          components:{headNav,left}
@@ -39,7 +41,7 @@
 </script>
 <style lang="less" scoped>
     .content{
-        height: 80%;
+        min-height: 80%;
         display: flex;
         margin: 2rem;
         .left{
@@ -48,6 +50,7 @@
         }
         .right{
             flex-grow: 2;
+            padding: 1rem;
         }
     }
 </style>

@@ -5,6 +5,9 @@ import Register from '../views/register.vue'
 import Page404 from '../views/404.vue'
 import Index from '../views/index.vue'
 import userPage from '../views/userPage.vue'
+import Fund from '../views/fund.vue'
+import Home from '../views/home.vue'
+
 Vue.use(VueRouter)
 
   const routes = [
@@ -17,8 +20,12 @@ Vue.use(VueRouter)
     component:Index,
     name:'index',
     children:[
+      {path:'',name:'home',component:Home},
+      {path:'/home',name:'home',component:Home},
       {path:'/userpage',name:'userpage',component:userPage},
-      {path: '/billings',name:'billings',component:userPage},
+      {path: '/fund',name:'fund',component:Fund},
+      {path: '/fund1',name:'fund1',component:Fund},
+      {path: '/fund2',name:'fund2',component:Fund},
     ]
   }
 ]

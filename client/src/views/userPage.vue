@@ -22,7 +22,15 @@
          created(){
              let userInfo = this.$store.getters.userInfo;
              this.userInfo = userInfo;
-         }
+         },
+         beforeRouteEnter:(to,from,next)=>{
+            //此时该组件还没被实例化
+            // console.log('未实例化');//弹出消息框信息为 undefined
+            next(vm =>{
+                //此时该组件被实例化了
+                // console.log('实例化');
+            })
+        }
      }
 </script>
 <style lang="less" scoped>
