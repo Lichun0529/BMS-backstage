@@ -25,8 +25,6 @@
          },
          methods:{
              get(){
-                this.$axios.get('/api/profiles/allprofile').then(res=>{
-                })
              }
          },
          watch:{

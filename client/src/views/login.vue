@@ -40,26 +40,25 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="exampleInputIcon4">Your Identity</label>
-                                        <div class="btn-group mr-2 mb-2" :class="show?'show':''">
-                                            <button type="button" class="btn btn-primary" >{{identity}}</button>
-                                            <button type="button" @click="chooseIdentity" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" :aria-expanded="ariaExpanded">
+                                        <div class="btn-group mr-2 mb-2">
+                                            <button type="button" class="btn btn-primary" :class="identity=='Please choose'?'text-black-50':'shadow-inset'">{{identity}}</button>
+                                            <button type="button" @click="chooseIdentity" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <span class="fas fa-angle-down dropdown-arrow"></span>
                                                 <span class="sr-only">Toggle Dropdown</span>
                                             </button>
-                                            <div class="dropdown-menu"  :class="show?'show':''" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(91px, 44px, 0px);">
-                                                <a class="dropdown-item" v-for="(item,index) in IdentityList" :key="index" @click="changeIdt(item.idt)">{{item.idt}}</a>
+                                            <div class="dropdown-menu pl-2 pr-2"   x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(91px, 44px, 0px);">
+                                                <a class="dropdown-item " style="border-radius: 0.55rem;" v-for="(item,index) in IdentityList" :key="index" @click="changeIdt(item.idt)">{{item.idt}}</a>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- End of Form -->
                                     <div class="d-block d-sm-flex justify-content-between align-items-center mb-4">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck5">
+                                            <input class="form-check-input" type="checkbox" v-model="isRemember" id="defaultCheck5">
                                             <label class="form-check-label" for="defaultCheck5">
                                                 Remember me
                                             </label>
                                         </div>
-                                        <!-- <div><a href="#" class="small text-right">Lost password?</a></div> -->
                                     </div>
                                 </div>
                                 <button @click="signIn" class="btn btn-block btn-primary text-secondary">
@@ -83,30 +82,48 @@
     export default{
         data(){
             return{
+                isRemember:false,
                 showLoading:false,
                 showAlert:false,
                 alertStr:'',
                 email:'',
                 password:'',
-                show:false,
-                ariaExpanded:false,
-                identity:'Identity',
+                identity:'Please choose',
                 IdentityList:[
                     {idt:'Employee'},
                     {idt:'Administrators'}
                 ],
             }
         },
+        created(){
+            //remember me功能
+            if(localStorage.getItem('loginInfo')){
+                let loginInfo = JSON.parse(localStorage.getItem('loginInfo'));
+                console.log(Date.now()-loginInfo.time);
+                //7天有效期，过期删除
+                if(Date.now()-loginInfo.time>604800000){
+                    localStorage.removeItem('loginInfo')
+                }else{
+                    this.email = loginInfo.email;
+                    this.password = loginInfo.password;
+                    this.identity = loginInfo.identity; 
+                }
+            }
+        },
         methods:{
             signIn(){
                 let alertList = [];
+                let emailReg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
                 if(this.email == ''){
                     alertList.push('email')
                 }
                 if(this.password == ''){
                     alertList.push('password')
                 }
-                if(this.identity == 'Identity'){
+                if(this.password == ''){
+                    alertList.push('password')
+                }
+                if(this.identity == 'Please choose'){
                     alertList.push('identity')
                 }
                 if(alertList.length != 0){
@@ -127,6 +144,15 @@
                             this.showLoading = false;
                             document.body.scrollTop = document.documentElement.scrollTop = 0;//回顶部
                         }else if(res.data.token){
+                            if(this.isRemember){
+                                let loginInfo = {
+                                    email:this.email,
+                                    password:this.password,
+                                    identity:this.identity.toLowerCase(),
+                                    time:Date.now()
+                                }
+                                localStorage.setItem('loginInfo',JSON.stringify(loginInfo))
+                            }
                             //本地储存token
                             localStorage.setItem('BMStoken',res.data.token)
                             //解析token并存储用户信息
@@ -134,21 +160,15 @@
                             let isAuthenticated = res.data.token ? true : false;
                             this.$store.dispatch('setAuthenticated',isAuthenticated)
                             this.$store.dispatch('setUserInfo',userInfo)
-                            this.$router.push({
-                                name:'index'
-                            })
-                            
+                            this.$router.push('/index')
                         }
                     })
                 }
             },
             changeIdt(e){
                 this.identity = e;
-                this.show = this.ariaExpanded = false ;
             },
             chooseIdentity(){
-                this.show = !this.show;
-                this.ariaExpanded = !this.ariaExpanded
             }
         }
     }

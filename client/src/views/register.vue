@@ -45,7 +45,23 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><span class="fas fa-unlock-alt"></span></span>
                             </div>
-                            <input class="form-control" v-model="password" id="exampleInputPassword7" placeholder="Password" type="password" aria-label="Password" >
+                            <input class="form-control" @input="checkPwdRules" @focus="showToats = true" @blur="showToats = false" v-model="password" id="exampleInputPassword7" placeholder="Password" type="password" aria-label="Password" >
+                        </div>
+                        <div class="toast fade" :class="showToats?'show':'hide'" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="toast-header text-dark">
+                                <strong class="mr-auto ml-2">Tips</strong>
+                                <button type="button" class="ml-2 mb-1 close" @click="showToats = false" data-dismiss="toast" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="toast-body">
+                                <ul>
+                                    <li :class="checkPwd.r1?'text-through text-black-50':''">The password length must between <strong>8-16 characters</strong></li>
+                                    <li :class="checkPwd.r2?'text-through text-black-50':''">The password must contain at least <strong>1 lowercase alphabetical</strong></li>
+                                    <li :class="checkPwd.r3?'text-through text-black-50':''">The password must contain at least <strong>1 uppercase alphabetical character</strong></li>
+                                    <li :class="checkPwd.r4?'text-through text-black-50':''">The password must contain at least <strong>1 numeric character</strong></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -59,14 +75,14 @@
                     </div>
                     <div class="form-group">
                         <label for="exampleInputIcon4">Your Identity</label>
-                        <div class="btn-group mr-2 mb-2" :class="show?'show':''">
-                            <button type="button" class="btn btn-primary" >{{identity}}</button>
+                        <div class="btn-group mr-2 mb-2" >
+                            <button type="button" class="btn btn-primary" :class="identity=='Please choose'?'text-black-50':'shadow-inset'" style="font-weight:300">{{identity}}</button>
                             <button type="button" @click="chooseIdentity" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" :aria-expanded="ariaExpanded">
                                 <span class="fas fa-angle-down dropdown-arrow"></span>
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
-                            <div class="dropdown-menu"  :class="show?'show':''" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(91px, 44px, 0px);">
-                                <a class="dropdown-item" v-for="(item,index) in IdentityList" :key="index" @click="changeIdt(item.idt)">{{item.idt}}</a>
+                            <div class="dropdown-menu pl-2 pr-2" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(91px, 44px, 0px);">
+                                <a class="dropdown-item" style="border-radius: 0.55rem;" v-for="(item,index) in IdentityList" :key="index" @click="changeIdt(item.idt)">{{item.idt}}</a>
                             </div>
                         </div>
                     </div>
@@ -108,14 +124,20 @@
     export default{
         data(){
             return{
+                checkPwd:{
+                    r1:false,
+                    r2:false,
+                    r3:false,
+                    r4:false,
+                },
+                showToats:false,
                 showModal:false,
                 countdown:3,
                 showLoading:false,
                 showAlert:false,
                 alertStr:'',
-                show:false,
                 ariaExpanded:false,
-                identity:'Identity',
+                identity:'Please choose',
                 IdentityList:[
                     {idt:'Employee'},
                     {idt:'Administrators'}
@@ -138,6 +160,7 @@
             signIn(){
                 let alertList = [];
                 let emailReg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+                let pwdReg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/;
                 if(this.name == ''){
                     alertList.push('name')
                 }
@@ -150,11 +173,14 @@
                 if(this.confirmPassword == ''){
                     alertList.push('confirm password')
                 }
-                if(this.identity == 'Identity'){
+                if(this.identity == 'Please choose'){
                     alertList.push('identity')
                 }
                 if(emailReg.test(this.email) == false){
                     this.alertStr = 'Valid email address format';
+                    this.showAlert = true;
+                }else if(pwdReg.test(this.password) == false){
+                    this.alertStr = 'The password length must between 8-16 characters,at least has 1 lowercase alphabetical character, at least has 1 uppercase alphabetical character,at least has 1 numeric character';
                     this.showAlert = true;
                 }else if(this.password != this.confirmPassword){
                     this.showAlert = true;
@@ -177,14 +203,23 @@
                             let countdown = setInterval(() => {
                                 this.countdown--
                                 if(this.countdown == 0){
-                                    this.$router.push({
-                                        name:'index'
-                                    })
+                                    this.$router.push('/index')
                                 }
                             }, 1000);
                         }
                     })
                 }
+            },
+            checkPwdRules(){
+                let r1Reg = /.{8,16}/;
+                let r2Reg = /(?=.*?[a-z])/;
+                let r3Reg = /(?=.*?[A-Z])/;
+                let r4Reg = /(?=.*?[0-9])/;
+                r1Reg.test(this.password)?this.checkPwd.r1 = true:this.checkPwd.r1 = false;
+                r2Reg.test(this.password)?this.checkPwd.r2 = true:this.checkPwd.r2 = false;
+                r3Reg.test(this.password)?this.checkPwd.r3 = true:this.checkPwd.r3 = false;
+                r4Reg.test(this.password)?this.checkPwd.r4 = true:this.checkPwd.r4 = false;
+                console.log(this.checkPwd.r1,this.checkPwd.r2,this.checkPwd.r3,this.checkPwd.r4);
             }
         }
     }
@@ -219,5 +254,15 @@
         .close{
              width: 5%;
         }
+    }
+    .toast {
+        position: absolute;
+        right: -21rem;
+        top: -36px;
+        max-width: 320px;
+        ul{
+            padding-left: 2rem;
+        }
+        animation: show-dropdown .2s ease forwards;
     }
 </style>

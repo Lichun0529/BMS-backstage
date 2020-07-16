@@ -112,7 +112,10 @@
              }
          },
          created(){
-             
+            this.$axios.get('/api/profiles/allprofile').then(res=>{
+                console.log(res);
+                    
+            })
          },
          mounted(){
              $(".datepicker").datepicker({
