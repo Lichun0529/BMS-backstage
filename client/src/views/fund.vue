@@ -8,7 +8,7 @@
                             <span class="h6" for="exampleInputDate2">From:</span>
                             <div class="input-group input-group-border">
                                 <div class="input-group-prepend"><span class="input-group-text"><span class="far fa-calendar-alt"></span></span></div>
-                                <input class="form-control datepicker" @click="picker" id="exampleInputDate2" placeholder="Start date" type="text">
+                                <input class="form-control datepicker" id="exampleInputDate2" placeholder="Start date" type="text">
                             </div>
                         </div>
                     </div>
@@ -26,38 +26,37 @@
                     </button>
                 </div>
             </div>
-            <button class="btn btn-primary btn-sm col-md-1 col-lg-1 col-xl-1" type="button">
+            <button class="btn btn-primary btn-sm col-md-1 col-lg-1 col-xl-1 text-success" type="button">
                 Add<span class="ml-2"><span class="fas fa-plus"></span></span>
             </button>
         </div>
         <div class="row mt-4">
-            <table class="table shadow-inset rounded">
+            <table class="table table-hover shadow-inset rounded">
                 <thead>
                     <tr>
-                        <th class="border-0" width="19%" scope="col" id="creatTime">
+                        <th class="border-0" width="13%" style="min-width:9rem;" scope="col" id="creatTime">
                             <a>Create Time
-                                <i class="fas fa-sort-up ml-1"></i>
-                                <i class="fas fa-sort-down " style="position: relative;left: -0.62rem;"></i>
+                                <i class="fas fa-sort ml-1"></i>
                             </a>
                         </th>
-                        <th class="border-0" width="7%" scope="col" id="type">Type</th>
-                        <th class="border-0" width="15%" scope="col" id="describe">Describe</th>
+                        <th class="border-0" width="14%" scope="col" id="type">Type</th>
+                        <th class="border-0" width="17%" scope="col" id="describe">Describe</th>
                         <th class="border-0" width="7%" scope="col" id="income">Income</th>
-                        <th class="border-0" width="5%" scope="col" id="expenditure">Expenditure</th>
+                        <th class="border-0" width="5%" scope="col" id="expend">Expend</th>
                         <th class="border-0" width="7%" scope="col" id="cash">Cash</th>
-                        <th class="border-0" width="20%" scope="col" id="remarks">Remarks</th>
-                        <th class="border-0" style="min-width:8rem;max-width:8rem;" scope="col" id="options">Options</th>
+                        <th class="border-0" width="26%" scope="col" id="remarks">Remarks</th>
+                        <th class="border-0" style="min-width:8rem;" width="1%" scope="col" id="options">Options</th>
                     </tr>
                 </thead>
-                <tbody class="table-hover">
-                    <tr v-for="(item,i) in 10" :key="i">
-                        <td >5123123123</td>
-                        <td >51231</td>
-                        <td >523123</td>
-                        <td >5123123</td>
-                        <td >512312</td>
-                        <td >53123</td>
-                        <td >5123</td>
+                <tbody>
+                    <tr v-for="(item,i) in tableData" :key="i">
+                        <td >{{item.date}}</td>
+                        <td >{{item.type}}</td>
+                        <td >{{item.describe}}</td>
+                        <td >{{item.income}}</td>
+                        <td >{{item.expend}}</td>
+                        <td >{{item.cash}}</td>
+                        <td >{{item.remark}}</td>
                         <td >
                             <button class="btn btn-sm  btn-primary text-info mr-2" style="" type="button">
                                 <span class="ml-1"><span class="far fa-edit"></span></span>
@@ -72,7 +71,7 @@
         </div>
         <div class="footer mt-3">
             <span class="mr-3" style="color:#a1a2b5;">15 items</span>
-            <select class="custom-select mr-3 shadow-inset" style="width:5.5rem;font-size:0.8rem" id="inlineFormCustomSelectPref">
+            <select class="custom-select mr-3 shadow-inset" style="width:5.5rem;" id="inlineFormCustomSelectPref">
                 <option selected="" value="10">10/Page</option>
                 <option value="15">15/Page</option>
                 <option value="20">20/Page</option>
@@ -114,7 +113,13 @@
          created(){
             this.$axios.get('/api/profiles/allprofile').then(res=>{
                 console.log(res);
-                    
+                if(res.data){
+                    for(let i in res.data){
+                        let GMT = new Date(res.data[i].date);
+                        res.data[i].date = this.GMTToStr(GMT);
+                    }
+                    this.tableData = res.data;
+                }
             })
          },
          mounted(){
@@ -131,8 +136,16 @@
             });
          },
          methods:{
-             picker(){
-             }
+             GMTToStr(time){
+                let date = new Date(time)
+                let Str = date.getFullYear() + '-' +
+                (date.getMonth() + 1) + '-' +
+                date.getDate() + ' ' +
+                date.getHours() + ':' +
+                date.getMinutes() + ':' +
+                date.getSeconds()
+                return Str
+            }
          }
      }
 </script>
@@ -158,16 +171,13 @@
     .searchBtn{
         padding: 0.55rem 0;
     }
-    .bb{
-        border-bottom: 0.0625rem solid #D1D9E6;
-    }
-    .br{
-        border-right: 0.0625rem solid #D1D9E6;
-    }
-    th,td{
-        text-align: center;
-        border-right: 0.0625rem solid #D1D9E6;
-        padding: 0.5rem 1rem;
+    .table{
+        font-size: 0.8rem;
+        th,td{
+            text-align: center;
+            border-right: 0.0625rem solid #D1D9E6;
+            padding: 0.5rem 1rem;
+        }
     }
     .border-0{
         border-right: 0.0625rem solid #D1D9E6 !important;
@@ -184,5 +194,8 @@
                 margin: 0;
             }
         }
+    }
+    .form-control,h6,span,.custom-select{
+        font-size: 0.8rem;
     }
 </style>

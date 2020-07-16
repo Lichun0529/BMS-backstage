@@ -41,7 +41,8 @@
     .content{
         min-height: 80%;
         display: flex;
-        margin: 2rem;
+        margin: 2rem auto;
+        max-width: 1400px;
         .left{
             width: 15rem;
             margin-right: 1rem;

@@ -23,12 +23,12 @@
                                         <a class="dropdown-item" >{{item.name}}</a>
                                     </li>
                                 </ul> -->
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu pl-2 pr-2">
                                     <li @click="showInfo">
-                                        <a class="dropdown-item font-weight-bold" >Information</a>
+                                        <a class="dropdown-item font-weight-bold" style="border-radius: 0.55rem;">Information</a>
                                     </li>
                                     <li @click="signOut">
-                                        <a class="dropdown-item font-weight-bold" style="color:#A91E2C">Sign Out</a>
+                                        <a class="dropdown-item font-weight-bold" style="border-radius: 0.55rem;color:#A91E2C">Sign Out</a>
                                     </li>
                                 </ul>
                             </li>

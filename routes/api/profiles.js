@@ -36,7 +36,7 @@ router.get(
         .then(data=>{
             if(!data){
                 return res.json('没有任何内容')
-            }  
+            }
             res.json(data)
         })
         .catch(err=>{res.json(err).status(404)})

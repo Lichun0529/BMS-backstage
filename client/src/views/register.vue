@@ -17,110 +17,114 @@
                     <div class="card-header text-center pb-0">
                         <h2 class="mb-0 h5">Create Account</h2>                               
                     </div>
-                <div class="card-body">
-                <!-- Form -->
-                
-                    <div class="form-group">
+                    <div class="card-body">
+                        <!-- Form -->
                         <div class="form-group">
-                        <label for="exampleInputIcon4">Your Name</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="fas fa-envelope"></span></span>
+                            <div class="form-group">
+                            <label for="exampleInputIcon4">Your Name</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><span class="fas fa-envelope"></span></span>
+                                </div>
+                                <input class="form-control" v-model="name" id="exampleInputIcon4" placeholder="Name" type="text" >
                             </div>
-                            <input class="form-control" v-model="name" id="exampleInputIcon4" placeholder="Name" type="text" >
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputIcon4">Your Email</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="fas fa-envelope"></span></span>
+                        <div class="form-group">
+                            <label for="exampleInputIcon4">Your Email</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><span class="fas fa-envelope"></span></span>
+                                </div>
+                                <input class="form-control" v-model="email" id="exampleInputIcon4" placeholder="example@company.com" type="email" aria-label="email adress" >
                             </div>
-                            <input class="form-control" v-model="email" id="exampleInputIcon4" placeholder="example@company.com" type="email" aria-label="email adress" >
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword7">Password</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="fas fa-unlock-alt"></span></span>
+                        <div class="form-group">
+                            <label for="exampleInputPassword7">Password</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><span class="fas fa-unlock-alt"></span></span>
+                                </div>
+                                <input class="form-control" @input="checkPwdRules" @focus="showToats = true" @blur="showToats = false" v-model="password" id="exampleInputPassword7" placeholder="Password" type="password" aria-label="Password" >
                             </div>
-                            <input class="form-control" @input="checkPwdRules" @focus="showToats = true" @blur="showToats = false" v-model="password" id="exampleInputPassword7" placeholder="Password" type="password" aria-label="Password" >
+                            <div class="toast fade" :class="showToats?'show':'hide'" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div class="toast-header text-dark">
+                                    <strong class="mr-auto ml-2">Tips</strong>
+                                    <button type="button" class="ml-2 mb-1 close" @click="showToats = false" data-dismiss="toast" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="toast-body">
+                                    <ul>
+                                        <li :class="checkPwd.r1?'text-through text-black-50':''">The password length must between <strong>8-16 characters</strong></li>
+                                        <li :class="checkPwd.r2?'text-through text-black-50':''">The password must contain at least <strong>1 lowercase alphabetical</strong></li>
+                                        <li :class="checkPwd.r3?'text-through text-black-50':''">The password must contain at least <strong>1 uppercase alphabetical character</strong></li>
+                                        <li :class="checkPwd.r4?'text-through text-black-50':''">The password must contain at least <strong>1 numeric character</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <div class="toast fade" :class="showToats?'show':'hide'" role="alert" aria-live="assertive" aria-atomic="true">
-                            <div class="toast-header text-dark">
-                                <strong class="mr-auto ml-2">Tips</strong>
-                                <button type="button" class="ml-2 mb-1 close" @click="showToats = false" data-dismiss="toast" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
+                        <div class="form-group">
+                            <label for="exampleConfirmPassword7">Confirm Password</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><span class="fas fa-unlock-alt"></span></span>
+                                </div>
+                                <input class="form-control" v-model="confirmPassword" id="exampleConfirmPassword7" placeholder="Confirm password" type="password" aria-label="Password" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputIcon4">Your Identity</label>
+                            <div class="btn-group mr-2 mb-2" >
+                                <button type="button" class="btn btn-primary" :class="identity=='Please choose'?'text-black-50':'shadow-inset'" style="font-weight:300">{{identity}}</button>
+                                <button type="button" @click="chooseIdentity" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" :aria-expanded="ariaExpanded">
+                                    <span class="fas fa-angle-down dropdown-arrow"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
                                 </button>
-                            </div>
-                            <div class="toast-body">
-                                <ul>
-                                    <li :class="checkPwd.r1?'text-through text-black-50':''">The password length must between <strong>8-16 characters</strong></li>
-                                    <li :class="checkPwd.r2?'text-through text-black-50':''">The password must contain at least <strong>1 lowercase alphabetical</strong></li>
-                                    <li :class="checkPwd.r3?'text-through text-black-50':''">The password must contain at least <strong>1 uppercase alphabetical character</strong></li>
-                                    <li :class="checkPwd.r4?'text-through text-black-50':''">The password must contain at least <strong>1 numeric character</strong></li>
-                                </ul>
+                                <div class="dropdown-menu pl-2 pr-2" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(91px, 44px, 0px);">
+                                    <a class="dropdown-item" style="border-radius: 0.55rem;" v-for="(item,index) in IdentityList" :key="index" @click="changeIdt(item.idt)">{{item.idt}}</a>
+                                </div>
                             </div>
                         </div>
+                        <!-- End of Form -->
                     </div>
-                    <div class="form-group">
-                        <label for="exampleConfirmPassword7">Confirm Password</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><span class="fas fa-unlock-alt"></span></span>
-                            </div>
-                            <input class="form-control" v-model="confirmPassword" id="exampleConfirmPassword7" placeholder="Confirm password" type="password" aria-label="Password" >
-                        </div>
+                    <button @click="signIn"  class="btn btn-block btn-primary text-secondary" style="margin-top:1.3em">
+                        Sign In<span v-show="showLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </button>
+                    <div class="d-block d-sm-flex justify-content-center align-items-center mt-4">
+                        <span class="font-weight-normal">
+                            Already have an account?
+                            <router-link to="/login" class="font-weight-bold">Login here</router-link>
+                        </span>
                     </div>
-                    <div class="form-group">
-                        <label for="exampleInputIcon4">Your Identity</label>
-                        <div class="btn-group mr-2 mb-2" >
-                            <button type="button" class="btn btn-primary" :class="identity=='Please choose'?'text-black-50':'shadow-inset'" style="font-weight:300">{{identity}}</button>
-                            <button type="button" @click="chooseIdentity" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" :aria-expanded="ariaExpanded">
-                                <span class="fas fa-angle-down dropdown-arrow"></span>
-                                <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <div class="dropdown-menu pl-2 pr-2" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(91px, 44px, 0px);">
-                                <a class="dropdown-item" style="border-radius: 0.55rem;" v-for="(item,index) in IdentityList" :key="index" @click="changeIdt(item.idt)">{{item.idt}}</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- End of Form -->
                 </div>
-                <button @click="signIn"  class="btn btn-block btn-primary text-secondary" style="margin-top:1.3em">
-                    Sign In
-                <span v-show="showLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                </button>
-            
-            <div class="d-block d-sm-flex justify-content-center align-items-center mt-4">
-                <span class="font-weight-normal">
-                    Already have an account?
-                    <router-link to="/login" class="font-weight-bold">Login here</router-link>
-                </span>
+                </div>
             </div>
         </div>
-    </div>
-            </div>
-        </div>
-        <div class="modal fade" :class="showModal?'show':''" id="modal-notification" tabindex="-1" role="dialog" aria-labelledby="modal-notification" :style="showModal?'display: block; padding-right: 17px;':'display: none;'" :aria-modal="showModal">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content bg-primary">
-                    <div class="modal-body">
-                        <div class="py-3 text-center">
-                            <span class="modal-icon display-1-lg"><span class="far fa-check-circle"></span></span>
-                            <h2 class="h4 my-3">Login...{{countdown}}</h2>
+        <!-- Modal Content -->
+            <div class="modal fade" :class="showModal?'show':''" :style="showModal?'display: block':'display: none'" id="modal-achievement" tabindex="-1" role="dialog" aria-labelledby="modal-achievement" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content shadow-soft">
+                        <div class="modal-body">
+                            <div class="py-3 text-center">
+                                <span class="modal-icon icon icon-dark display-1-lg"><span class="far fa-check-circle"></span></span>
+                                <h2 class="h4 modal-title my-2">Sign In Success!</h2>
+                                <p>Login...</p>
+                                <div class="progress-wrapper">
+                                    <div class="progress">
+                                        <div class="progress-bar bg-dark" style="width: 100%; animation: 3s ease 0s 1 normal none running animate-positive; opacity: 1;" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        <!-- End of Modal Content -->
         <div class="modal-backdrop show" v-show="showModal"></div>
     </div>
 </template>
 <script>
-    // import api from '../request/api'
+    import jwtdecode from 'jwt-decode'
     export default{
         data(){
             return{
@@ -132,7 +136,6 @@
                 },
                 showToats:false,
                 showModal:false,
-                countdown:3,
                 showLoading:false,
                 showAlert:false,
                 alertStr:'',
@@ -190,6 +193,7 @@
                     this.showAlert = true;
                     document.body.scrollTop = document.documentElement.scrollTop = 0;//回顶部
                 }else{
+                    this.showLoading = true;
                     this.showAlert = false;
                     this.$axios.post('/api/users/register',{
                         name:this.name,
@@ -197,15 +201,18 @@
                         password:this.password,
                         identity:this.identity
                     }).then(res=>{
-                        console.log(res);
-                        this.showModal = true
                         if(res.data.success == true){
-                            let countdown = setInterval(() => {
-                                this.countdown--
-                                if(this.countdown == 0){
-                                    this.$router.push('/index')
-                                }
-                            }, 1000);
+                            this.showModal = true
+                            //本地储存token
+                            localStorage.setItem('BMStoken',res.data.token)
+                            //解析token并存储用户信息
+                            let userInfo = jwtdecode(res.data.token);
+                            let isAuthenticated = res.data.token ? true : false;
+                            this.$store.dispatch('setAuthenticated',isAuthenticated)
+                            this.$store.dispatch('setUserInfo',userInfo)
+                            let loginCountdown = setTimeout(() => {
+                                this.$router.push('/index').catch(()=>{})
+                            }, 3000);
                         }
                     })
                 }

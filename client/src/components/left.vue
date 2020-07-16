@@ -1,5 +1,4 @@
 <template>
-        <div class="">
             <div class="accordion">
                 <div class="card card-sm card-body bg-primary mb-1" :class="item.checked?'checked':''" v-for="(item,i) in items" :key="i">
                     <a class="accordion-panel-header" @click="changeHeader(item.path,i)" :data-target="'#panel-'+i" data-toggle="collapse" role="button" aria-expanded="false" :aria-controls="'panel-'+i">
@@ -15,7 +14,6 @@
                 </div>
                 
             </div>
-        </div>
 </template>
 <script >
      export default{
@@ -82,14 +80,6 @@
                 }
              }
          },
-         beforeRouteEnter:(to,from,next)=>{
-            //此时该组件还没被实例化
-            // console.log('未实例化');//弹出消息框信息为 undefined
-            next(vm =>{
-                //此时该组件被实例化了
-                // console.log('实例化');
-            })
-        }
      }
 </script>
 <style lang="less" scoped>
