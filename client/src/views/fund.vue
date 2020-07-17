@@ -8,7 +8,7 @@
                             <span class="h6" for="exampleInputDate2">From:</span>
                             <div class="input-group input-group-border">
                                 <div class="input-group-prepend"><span class="input-group-text"><span class="far fa-calendar-alt"></span></span></div>
-                                <input class="form-control datepicker" id="exampleInputDate2" placeholder="Start date" type="text">
+                                <input autocomplete="off" class="form-control datepicker" id="exampleInputDate2" placeholder="Start date" type="text">
                             </div>
                         </div>
                     </div>
@@ -17,7 +17,7 @@
                             <label class="h6" for="exampleInputDate3">To:</label>
                             <div class="input-group input-group-border">
                                 <div class="input-group-prepend"><span class="input-group-text"><span class="far fa-calendar-alt"></span></span></div>
-                                <input class="form-control datepicker" id="exampleInputDate3" placeholder="End date" type="text">
+                                <input autocomplete="off" class="form-control datepicker" id="exampleInputDate3" placeholder="End date" type="text">
                             </div>
                         </div>
                     </div>
@@ -34,8 +34,8 @@
             <table class="table table-hover shadow-inset rounded">
                 <thead>
                     <tr>
-                        <th class="border-0" width="13%" style="min-width:9rem;" scope="col" id="creatTime">
-                            <a>Create Time
+                        <th class="border-0" width="13%" style="min-width:10rem;" scope="col" id="creatTime">
+                            <a @click="reSort">Create Time
                                 <i class="fas fa-sort ml-1"></i>
                             </a>
                         </th>
@@ -49,16 +49,22 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <tr v-show="tableLoading">
+                        <td colspan="8" style="font-size:2rem">
+                            <span class="spinner-border spinner-border-sm "></span>
+                            <span class="ml-2">Loading...</span>
+                        </td>
+                    </tr>
                     <tr v-for="(item,i) in tableData" :key="i">
                         <td >{{item.date}}</td>
                         <td >{{item.type}}</td>
                         <td >{{item.describe}}</td>
-                        <td >{{item.income}}</td>
-                        <td >-{{item.expend}}</td>
+                        <td class="text-success" style="font-weight:700">{{item.income}}</td>
+                        <td class="text-danger" style="font-weight:700">-{{item.expend}}</td>
                         <td >{{item.cash}}</td>
                         <td >{{item.remark}}</td>
                         <td >
-                            <button @click="edit" class="btn btn-sm  btn-primary text-info mr-2" style="" type="button">
+                            <button @click="editData(item._id,i)" class="btn btn-sm  btn-primary text-info mr-2" style="" type="button">
                                 <span class="far fa-edit ml-1"></span>
                             </button>
                             <button  id="delBtn" class="btn btn-sm  btn-primary text-danger" type="button" data-toggle="dropdown">
@@ -104,19 +110,27 @@
             </a>
         </div>
         <ModalAdd v-show="showModalAdd" @close="closeModalAdd" @getData="getData"></ModalAdd>
+        <ModalEdit v-show="showModalEdit" @close="closeModalAdd" @getData="getData"></ModalEdit>
     </div>
 </template>
 <script >
     import ModalAdd from '../components/modalAdd'
+    import ModalEdit from '../components/modaEdit'
      export default{
          name:'fund',
-         components:{ModalAdd},
+         components:{ModalAdd,ModalEdit},
          data(){
              return{
+                 sort:-1,//降序排列数据
+                 tableLoading:false,
                  showModalAdd:false,
+                 showModalEdit:false,
                  tableData:[],
                  showLoading:false
              }
+         },
+         created(){
+             this.getData()
          },
          mounted(){
              $(".datepicker").datepicker({
@@ -130,34 +144,53 @@
                 autoclose: true,
                 todayHighlight: true
             });
-            this.getData()
          },
          methods:{
-             edit(){
-                 this.$message('Delete Success!','error')
+             reSort(){
+                 this.sort == -1?this.sort = 1:this.sort = -1;
+                 this.getData(this.sort)
              },
-             getData(){
-                this.$axios.get('/api/profiles/allprofile').then(res=>{
+             editData(id,i){
+                this.showModalEdit = true;
+             },
+             getData(sort){
+                this.tableData = [];
+                let url = ''
+                sort ? url = '/api/profiles/allprofile/'+sort : url = '/api/profiles/allprofile/-1'
+                this.tableLoading = true;
+                this.$axios.get(url).then(res=>{
                     if(res.data){
                         for(let i in res.data){
                             let GMT = new Date(res.data[i].date);
                             res.data[i].date = this.GMTToStr(GMT);
                         }
+                        this.tableLoading = false;
                         this.tableData = res.data;
                     }
+                }).catch(err=>{
+                    this.$message('Capture Data Failed.','error')
+                    this.tableLoading = false;
+                    console.log(err);
                 })
              },
              delData(id,i){
                 this.tableData.splice(i,1)
                 this.showLoading = true ;
                 this.$axios.delete('/api/profiles/delete/'+id).then(res=>{
+                    console.log(res);
                     if(res.status == 200){
                         this.showLoading = false ;
+                        this.$message('Success!')
                     }
+                }).catch(err=>{
+                    this.showLoading = false;
+                    this.$message('Failed!','error')
+                    console.log(err);
                 })
              },
              closeModalAdd(){
                  this.showModalAdd = false;
+                 this.showModalEdit = false;
              },
              GMTToStr(time){
                 let date = new Date(time)
@@ -232,5 +265,20 @@
         max-width: 9rem;
         min-width: 8rem;  
         text-align: center;
+    }
+    tbody{
+        font-weight: 500;
+    }
+    .shadow-soft {
+    box-shadow: 6px 6px 12px #b8b9be, -6px -6px 12px #ffffff !important;
+}
+[class*="shadow"] {
+    transition: all 0.2s ease;
+}
+</style>
+<style >
+    .datepicker-dropdown{
+        box-shadow:6px 6px 12px #b8b9be, -6px -6px 12px #ffffff !important;
+        border-radius: 0.55rem !important;
     }
 </style>

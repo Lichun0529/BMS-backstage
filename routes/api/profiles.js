@@ -29,10 +29,10 @@ router.post(
 // @access private
 // 获取所有信息
 router.get(
-    '/allprofile',
+    '/allprofile/:sort',
     passport.authenticate('jwt',{session:false}),
     (req,res)=>{
-        Profiles.find().sort({'date':-1})
+        Profiles.find().sort({'date':req.params.sort})
         .then(data=>{
             if(!data){
                 return res.json('没有任何内容')
