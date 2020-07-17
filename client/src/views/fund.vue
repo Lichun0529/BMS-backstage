@@ -26,7 +26,7 @@
                     </button>
                 </div>
             </div>
-            <button class="btn btn-primary btn-sm col-md-1 col-lg-1 col-xl-1 text-success" type="button">
+            <button @click="showModalAdd = true" class="btn btn-primary btn-sm col-md-1 col-lg-1 col-xl-1 text-success" type="button" >
                 Add<span class="ml-2"><span class="fas fa-plus"></span></span>
             </button>
         </div>
@@ -54,16 +54,21 @@
                         <td >{{item.type}}</td>
                         <td >{{item.describe}}</td>
                         <td >{{item.income}}</td>
-                        <td >{{item.expend}}</td>
+                        <td >-{{item.expend}}</td>
                         <td >{{item.cash}}</td>
                         <td >{{item.remark}}</td>
                         <td >
                             <button class="btn btn-sm  btn-primary text-info mr-2" style="" type="button">
-                                <span class="ml-1"><span class="far fa-edit"></span></span>
+                                <span class="far fa-edit ml-1"></span>
                             </button>
-                            <button class="btn btn-sm  btn-primary text-danger" type="button">
-                                <span class="ml-1 mr-1"><span class="far fa-trash-alt"></span></span>
+                            <button  id="delBtn" class="btn btn-sm  btn-primary text-danger" type="button" data-toggle="dropdown">
+                                <span class="far fa-trash-alt ml-1 mr-1"></span>
                             </button>
+                            <div class="dropdown-menu" x-placement="bottom-start">
+                                <p class="text-danger">Are you sure?</p>
+                                <button class="btn btn-sm  btn-primary mr-2" style="" type="button">No</button>
+                                <button v-show="!showLoading" @click="delData(item._id,i)" class="btn btn-sm  btn-primary text-danger" type="button">Yes</button>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -98,29 +103,20 @@
                 Go<span class="ml-1"><span class="fas fa-angle-double-right"></span></span>
             </a>
         </div>
-        
+        <ModalAdd v-show="showModalAdd" @close="closeModalAdd" @getData="getData"></ModalAdd>
     </div>
 </template>
 <script >
-    
+    import ModalAdd from '../components/modalAdd'
      export default{
          name:'fund',
+         components:{ModalAdd},
          data(){
              return{
-                 tableData:[]
+                 showModalAdd:false,
+                 tableData:[],
+                 showLoading:false
              }
-         },
-         created(){
-            this.$axios.get('/api/profiles/allprofile').then(res=>{
-                console.log(res);
-                if(res.data){
-                    for(let i in res.data){
-                        let GMT = new Date(res.data[i].date);
-                        res.data[i].date = this.GMTToStr(GMT);
-                    }
-                    this.tableData = res.data;
-                }
-            })
          },
          mounted(){
              $(".datepicker").datepicker({
@@ -134,8 +130,32 @@
                 autoclose: true,
                 todayHighlight: true
             });
+            this.getData()
          },
          methods:{
+             getData(){
+                this.$axios.get('/api/profiles/allprofile').then(res=>{
+                    if(res.data){
+                        for(let i in res.data){
+                            let GMT = new Date(res.data[i].date);
+                            res.data[i].date = this.GMTToStr(GMT);
+                        }
+                        this.tableData = res.data;
+                    }
+                })
+             },
+             delData(id,i){
+                this.tableData.splice(i,1)
+                this.showLoading = true ;
+                this.$axios.delete('/api/profiles/delete/'+id).then(res=>{
+                    if(res.status == 200){
+                        this.showLoading = false ;
+                    }
+                })
+             },
+             closeModalAdd(){
+                 this.showModalAdd = false;
+             },
              GMTToStr(time){
                 let date = new Date(time)
                 let Str = date.getFullYear() + '-' +
@@ -197,5 +217,17 @@
     }
     .form-control,h6,span,.custom-select{
         font-size: 0.8rem;
+    }
+    .toast {
+        position: absolute;
+        right: 1rem;
+        top: 20px;
+        animation: show-dropdown .2s ease forwards;
+    }
+    .dropdown-menu{
+        padding: 1rem;
+        max-width: 9rem;
+        min-width: 8rem;  
+        text-align: center;
     }
 </style>

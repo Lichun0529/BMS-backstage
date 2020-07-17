@@ -99,7 +99,6 @@
             //remember me功能
             if(localStorage.getItem('loginInfo')){
                 let loginInfo = JSON.parse(localStorage.getItem('loginInfo'));
-                console.log(Date.now()-loginInfo.time);
                 //7天有效期，过期删除
                 if(Date.now()-loginInfo.time>604800000){
                     localStorage.removeItem('loginInfo')

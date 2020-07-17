@@ -32,7 +32,7 @@ router.get(
     '/allprofile',
     passport.authenticate('jwt',{session:false}),
     (req,res)=>{
-        Profiles.find()
+        Profiles.find().sort({'date':-1})
         .then(data=>{
             if(!data){
                 return res.json('没有任何内容')

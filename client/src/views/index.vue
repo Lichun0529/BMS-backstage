@@ -31,7 +31,6 @@
              $route(){
                  //当前路由路径传给左侧栏
                  this.path = this.$route.path;
-                 console.log(this.path);
              }
          },
          components:{headNav,left}
