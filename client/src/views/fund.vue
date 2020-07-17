@@ -58,7 +58,7 @@
                         <td >{{item.cash}}</td>
                         <td >{{item.remark}}</td>
                         <td >
-                            <button class="btn btn-sm  btn-primary text-info mr-2" style="" type="button">
+                            <button @click="edit" class="btn btn-sm  btn-primary text-info mr-2" style="" type="button">
                                 <span class="far fa-edit ml-1"></span>
                             </button>
                             <button  id="delBtn" class="btn btn-sm  btn-primary text-danger" type="button" data-toggle="dropdown">
@@ -133,6 +133,9 @@
             this.getData()
          },
          methods:{
+             edit(){
+                 this.$message('Delete Success!','error')
+             },
              getData(){
                 this.$axios.get('/api/profiles/allprofile').then(res=>{
                     if(res.data){

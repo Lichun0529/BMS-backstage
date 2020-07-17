@@ -2,7 +2,7 @@
   <div class="content">
     <div class="modalAdd modal-content shadow-soft">
       <div class="modal-header">
-        <h2 class="h6 modal-title mb-0">Add Data</h2>
+        <h2 class="h6 modal-title mb-0" style="font-weight:700">Add Data</h2>
         <button @click="close" type="button" class="close">
           <span>×</span>
         </button>
