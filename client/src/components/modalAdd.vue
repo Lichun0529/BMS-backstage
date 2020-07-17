@@ -22,8 +22,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>Describes:</th>
-                        <td><input v-model="describes" class="form-control" type="text" required></td>
+                        <th>describe:</th>
+                        <td><input v-model="describe" class="form-control" type="text" required></td>
                     </tr>
                     <tr>
                         <th>Income:</th>
@@ -38,15 +38,15 @@
                         <td><input v-model="cash" class="form-control" type="number" required></td>
                     </tr>
                     <tr>
-                        <th>Remarks:</th>
-                        <td><input v-model="remarks" class="form-control" type="text" ></td>
+                        <th>remark:</th>
+                        <td><input v-model="remark" class="form-control" type="text" ></td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div data-v-ff9c8678 class="modal-footer">
-            <button type="submit" class="btn btn-primary text-success">Save<span v-show="showLoading" class="spinner-border spinner-border-sm ml-2" role="status" aria-hidden="true"></span></button>
             <button @click="close" type="reset" class="btn btn-primary text-danger">Close</button>
+            <button type="submit" class="btn btn-primary text-success">Save<span v-show="showLoading" class="spinner-border spinner-border-sm ml-2" role="status" aria-hidden="true"></span></button>
         </div>
       </form>
     </div>
@@ -58,11 +58,11 @@ export default {
   data(){
       return{
         type:'',
-        describes:'',
+        describe:'',
         income:'',
         expend:'',
         cash:'',
-        remarks:'',
+        remark:'',
         showLoading:false
       }
   },
@@ -75,11 +75,11 @@ export default {
           this.showLoading = true;
           this.$axios.post('api/profiles/add',{
             type:this.type,
-            describe:this.describes,
+            describe:this.describe,
             income:this.income,
             expend:this.expend,
             cash:this.cash,
-            remarks:this.remarks
+            remark:this.remark
           }).then(res=>{
               if(res.status == 200){
                   this.showLoading = false;

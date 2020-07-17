@@ -110,7 +110,7 @@
             </a>
         </div>
         <ModalAdd v-show="showModalAdd" @close="closeModalAdd" @getData="getData"></ModalAdd>
-        <ModalEdit v-show="showModalEdit" @close="closeModalAdd" @getData="getData"></ModalEdit>
+        <ModalEdit :id="editId" :editData="editDatalist" :loading="editLoading" v-show="showModalEdit" @close="closeModalAdd" @getData="getData"></ModalEdit>
     </div>
 </template>
 <script >
@@ -123,10 +123,13 @@
              return{
                  sort:-1,//降序排列数据
                  tableLoading:false,
+                 editLoading:false,
                  showModalAdd:false,
                  showModalEdit:false,
                  tableData:[],
-                 showLoading:false
+                 showLoading:false,
+                 editDatalist:[],
+                 editId:''
              }
          },
          created(){
@@ -150,9 +153,6 @@
                  this.sort == -1?this.sort = 1:this.sort = -1;
                  this.getData(this.sort)
              },
-             editData(id,i){
-                this.showModalEdit = true;
-             },
              getData(sort){
                 this.tableData = [];
                 let url = ''
@@ -170,6 +170,19 @@
                 }).catch(err=>{
                     this.$message('Capture Data Failed.','error')
                     this.tableLoading = false;
+                    console.log(err);
+                })
+             },
+             editData(id,i){
+                this.showModalEdit = true;
+                this.editLoading = true;
+                this.editId = id;
+                this.$axios.get('/api/profiles/'+id).then(res=>{
+                    if(res.status == 200){
+                        this.editLoading = false;
+                        this.editDatalist = res.data;
+                    }
+                }).catch(err=>{
                     console.log(err);
                 })
              },
