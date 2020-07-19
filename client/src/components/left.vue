@@ -34,7 +34,7 @@
                         checked:false,
                         children:[
                             {path:'/fund',name:'Fund',checked:false},
-                            {path:'/fund1',name:'Fund1',checked:false},
+                            {path:'/game',name:'Game',checked:false},
                         ]
                      },
                      {

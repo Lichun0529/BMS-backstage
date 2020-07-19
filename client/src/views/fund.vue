@@ -51,8 +51,9 @@
                 <tbody>
                     <tr v-show="tableLoading">
                         <td colspan="8" style="font-size:2rem">
-                            <span class="spinner-border spinner-border-sm "></span>
-                            <span class="ml-2">Loading...</span>
+                            <span v-show="!tableEmpty" class="spinner-border spinner-border-sm "></span>
+                            <span v-show="!tableEmpty" class="ml-2">Loading...</span>
+                            <span v-show="tableEmpty" class="ml-2">Empty</span>
                         </td>
                     </tr>
                     <tr v-for="(item,i) in tableData" :key="i">
@@ -81,9 +82,9 @@
             </table>
         </div>
         <div class="footer mt-3">
-            <span class="mr-3" style="color:#a1a2b5;">15 items</span>
-            <select class="custom-select mr-3 shadow-inset" style="width:5.5rem;" id="inlineFormCustomSelectPref">
-                <option selected="" value="10">10/Page</option>
+            <span class="mr-3" style="color:#a1a2b5;">{{allItems}} items</span>
+            <select v-model="pageSize" @change="getData" class="custom-select mr-3 shadow-inset" style="width:5.5rem;">
+                <option value="10">10/Page</option>
                 <option value="15">15/Page</option>
                 <option value="20">20/Page</option>
                 <option value="25">25/Page</option>
@@ -92,24 +93,24 @@
                 <nav aria-label="navigation">
                     <ul class="pagination pagination ">
                         <li class="page-item rounded">
-                            <a class="page-link" style="font-size:0.8rem" aria-label="first link" href="#"><span class="fas fa-angle-double-left"></span></a>
+                            <a class="page-link" style="font-size:0.8rem" aria-label="first link" ><span class="fas fa-angle-double-left"></span></a>
                         </li>
-                        <li class="page-item rounded" v-for="(item,i) in 5" :key="i">
-                            <a class="page-link" style="font-size:0.8rem" href="#">{{i+1}}</a>
+                        <li class="page-item rounded" @click="pageButton(i)" :class="{active:pageBtnIndex == i}" v-for="(item,i) in allPages" :key="i">
+                            <a class="page-link" style="font-size:0.8rem" >{{i+1}}</a>
                         </li>
                         <li class="page-item rounded">
-                            <a class="page-link" style="font-size:0.8rem" aria-label="first link" href="#"><span class="fas fa-angle-double-right"></span></a>
+                            <a class="page-link" style="font-size:0.8rem" aria-label="first link" ><span class="fas fa-angle-double-right"></span></a>
                         </li>
                     </ul>
                 </nav>
             </div>
             <span class="ml-3" style="color:#a1a2b5;">go to page</span>
-            <input type="number" class="form-control ml-1 mr-1" style="width:4rem;font-size:0.8rem">
-            <a href="#" class="text-dark font-weight-bold" style="font-size:0.8rem">
+            <input type="number" v-model="gotoPage" class="form-control ml-1 mr-1" style="width:4rem;font-size:0.8rem">
+            <a @click="goPage" class="text-dark font-weight-bold" style="font-size:0.8rem">
                 Go<span class="ml-1"><span class="fas fa-angle-double-right"></span></span>
             </a>
         </div>
-        <ModalAdd v-show="showModalAdd" @close="closeModalAdd" @getData="getData"></ModalAdd>
+        <ModalAdd v-show="showModalAdd"  @close="closeModalAdd" @getData="getData"></ModalAdd>
         <ModalEdit :id="editId" :editData="editDatalist" :loading="editLoading" v-show="showModalEdit" @close="closeModalAdd" @getData="getData"></ModalEdit>
     </div>
 </template>
@@ -121,15 +122,23 @@
          components:{ModalAdd,ModalEdit},
          data(){
              return{
-                 sort:-1,//降序排列数据
-                 tableLoading:false,
-                 editLoading:false,
-                 showModalAdd:false,
-                 showModalEdit:false,
-                 tableData:[],
-                 showLoading:false,
-                 editDatalist:[],
-                 editId:''
+                tableEmpty:false,
+                tableLoading:false,
+                editLoading:false,
+                showModalAdd:false,
+                showModalEdit:false,
+                tableData:[],
+                showLoading:false,
+                editDatalist:[],
+                editId:'',
+                pageIndex:1,
+                allItems:0,
+                pageSize:10,
+                pageIndex:1,
+                sort:-1,//降序排列数据
+                pageBtnIndex:0,
+                allPages:0,
+                gotoPage:1
              }
          },
          created(){
@@ -149,16 +158,29 @@
             });
          },
          methods:{
+             goPage(){
+                this.pageIndex = this.gotoPage;
+                this.getData()  
+             },
+             pageButton(i){
+                this.pageBtnIndex = i;
+                this.pageIndex = i+1;
+                this.getData()
+             },
              reSort(){
                  this.sort == -1?this.sort = 1:this.sort = -1;
                  this.getData(this.sort)
              },
-             getData(sort){
+             getData(sort,pageIndex,pageSize){
                 this.tableData = [];
-                let url = ''
-                sort ? url = '/api/profiles/allprofile/'+sort : url = '/api/profiles/allprofile/-1'
+                let url = '/api/profiles/getProfile/'
+                let params = {
+                        sort:this.sort,
+                        pageIndex:this.pageIndex,
+                        pageSize:parseInt(this.pageSize)
+                    };
                 this.tableLoading = true;
-                this.$axios.get(url).then(res=>{
+                this.$axios.post(url,params).then(res=>{
                     if(res.data){
                         for(let i in res.data){
                             let GMT = new Date(res.data[i].date);
@@ -166,12 +188,24 @@
                         }
                         this.tableLoading = false;
                         this.tableData = res.data;
+                    }else{
+                        this.tableEmpty = true;
                     }
                 }).catch(err=>{
                     this.$message('Capture Data Failed.','error')
                     this.tableLoading = false;
                     console.log(err);
                 })
+                //获取数据总数量
+                this.$axios.get('/api/profiles/allprofile/').then(res=>{
+                    if(res.status == 200){
+                        this.allItems = res.data;
+                    }
+                    //获取总页数
+                    this.allPages = Math.ceil(this.allItems/this.pageSize);
+                }).catch(err=>{
+                        console.log(err);
+                    })
              },
              editData(id,i){
                 this.showModalEdit = true;
@@ -190,7 +224,6 @@
                 this.tableData.splice(i,1)
                 this.showLoading = true ;
                 this.$axios.delete('/api/profiles/delete/'+id).then(res=>{
-                    console.log(res);
                     if(res.status == 200){
                         this.showLoading = false ;
                         this.$message('Success!')
@@ -206,15 +239,21 @@
                  this.showModalEdit = false;
              },
              GMTToStr(time){
-                let date = new Date(time)
+                let date = new Date(time);
                 let Str = date.getFullYear() + '-' +
-                (date.getMonth() + 1) + '-' +
-                date.getDate() + ' ' +
-                date.getHours() + ':' +
-                date.getMinutes() + ':' +
-                date.getSeconds()
+                ((date.getMonth() + 1)<10?'0'+(date.getMonth()+1):(date.getMonth()+1)) + '-' +
+                (date.getDate()<10?'0'+date.getDate():date.getDate()) + ' ' +
+                (date.getHours()<10?'0'+date.getHours():date.getHours()) + ':' +
+                (date.getMinutes()<10?'0'+date.getMinutes():date.getMinutes()) + ':' +
+                (date.getSeconds()<10?'0'+date.getSeconds():date.getSeconds())
                 return Str
             }
+         },
+         watch:{
+             gotoPage:function(nVal,oVal){
+                 if(nVal<1) this.gotoPage = 1;
+                 if(nVal>this.allPages) this.gotoPage = this.allPages;
+             }
          }
      }
 </script>

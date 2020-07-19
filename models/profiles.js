@@ -28,7 +28,7 @@ const ProfilesSchema = new Schema({
     },
     date:{
         type: Date,
-        default:Date.now()
+        default:Date
     }
 })
 //[创建数据模型] 5. 把创建的Schema编译成model

@@ -7,7 +7,7 @@ import Index from '../views/index.vue'
 import userPage from '../views/userPage.vue'
 import Fund from '../views/fund.vue'
 import Home from '../views/home.vue'
-
+import Game from '../views/game.vue'
 Vue.use(VueRouter)
 
   const routes = [
@@ -25,7 +25,7 @@ Vue.use(VueRouter)
       {path:'/userpage',name:'userpage',component:userPage},
       {path: '/fund',name:'fund',component:Fund},
       {path: '/fund1',name:'fund1',component:Fund},
-      {path: '/fund2',name:'fund2',component:Fund},
+      {path: '/game',name:'game',component:Game},
     ]
   }
 ]

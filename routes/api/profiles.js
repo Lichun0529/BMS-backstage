@@ -28,18 +28,44 @@ router.post(
 // @desc return all profile
 // @access private
 // 获取所有信息
-router.get(
-    '/allprofile/:sort',
+router.get('/allprofile',
+passport.authenticate('jwt',{session:false}),
+    (req,res)=>{
+        Profiles.find()
+        .then(data=>{
+            if(!data){
+                return res.json('没有任何内容')
+            }
+            res.json(data.length)
+        }).catch(err=>{res.json(err).status(404)})
+    })
+// route Post api/profile/allprofile
+// @desc return all profile
+// @access private
+// 分页获取信息
+router.post(
+    '/getProfile',
     passport.authenticate('jwt',{session:false}),
     (req,res)=>{
-        Profiles.find().sort({'date':req.params.sort})
+        let sort = -1;
+        let pageIndex = 1*10;
+        let pageSize = 10;
+        if(req.body.sort)sort = req.body.sort;
+        if(req.body.pageIndex){
+            if(req.body.pageIndex >= 1){
+                pageIndex = (req.body.pageIndex-1)*10;
+            }else{
+                pageIndex = 10;
+            }
+        }
+        if(req.body.pageSize)pageSize = req.body.pageSize;
+        Profiles.find().sort({'date':sort}).skip(pageIndex).limit(pageSize)
         .then(data=>{
             if(!data){
                 return res.json('没有任何内容')
             }
             res.json(data)
-        })
-        .catch(err=>{res.json(err).status(404)})
+        }).catch(err=>{res.json(err).status(404)})
 })
 
 // route GET api/profile/:id
