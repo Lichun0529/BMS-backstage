@@ -59,12 +59,27 @@ router.post(
             }
         }
         if(req.body.pageSize)pageSize = req.body.pageSize;
-        Profiles.find().sort({'date':sort}).skip(pageIndex).limit(pageSize)
+        //按时间范围查找
+        let findRules = {}
+        if(req.body.startDate && req.body.endDate){
+            let startDate = new Date(req.body.startDate).toString() ;
+            let endDate =  new Date(req.body.endDate);
+            endDate =  new Date(endDate.setDate(endDate.getDate()+1)).toString()
+            findRules = {'date':{ "$gte":startDate, "$lte":endDate}}
+            pageSize = 99999;
+        }else{
+            findRules = {}
+        }
+        Profiles.find(findRules).sort({'date':sort}).skip(pageIndex).limit(pageSize)
         .then(data=>{
+            let dateAllitems = -1;
+            if(JSON.stringify(findRules)!='{}'&&data){
+                dateAllitems = data.length;
+            }
             if(!data){
                 return res.json('没有任何内容')
             }
-            res.json(data)
+            res.json({data:data,dateAllitems:dateAllitems})
         }).catch(err=>{res.json(err).status(404)})
 })
 

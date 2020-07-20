@@ -8,7 +8,7 @@
                             <span class="h6" for="exampleInputDate2">From:</span>
                             <div class="input-group input-group-border">
                                 <div class="input-group-prepend"><span class="input-group-text"><span class="far fa-calendar-alt"></span></span></div>
-                                <input autocomplete="off" class="form-control datepicker" id="exampleInputDate2" placeholder="Start date" type="text">
+                                <input  autocomplete="off" class="form-control datepicker" id="startdate" placeholder="Start date" type="text">
                             </div>
                         </div>
                     </div>
@@ -17,16 +17,16 @@
                             <label class="h6" for="exampleInputDate3">To:</label>
                             <div class="input-group input-group-border">
                                 <div class="input-group-prepend"><span class="input-group-text"><span class="far fa-calendar-alt"></span></span></div>
-                                <input autocomplete="off" class="form-control datepicker" id="exampleInputDate3" placeholder="End date" type="text">
+                                <input autocomplete="off" class="form-control datepicker" id="enddate" placeholder="End date" type="text">
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-primary btn-sm col-1 searchBtn" type="button">
+                    <button @click="dateFilter" class="btn btn-primary btn-sm col-1 searchBtn" type="button">
                         <span class="fas fa-search"></span>
                     </button>
                 </div>
             </div>
-            <button @click="showModalAdd = true" class="btn btn-primary btn-sm col-md-1 col-lg-1 col-xl-1 text-success" type="button" >
+            <button @click="showModalAdd = true" style="min-width: 5rem;" class="btn btn-primary btn-sm col-md-1 col-lg-1 col-xl-1 text-success" type="button" >
                 Add<span class="ml-2"><span class="fas fa-plus"></span></span>
             </button>
         </div>
@@ -92,14 +92,14 @@
             <div class="pageNav">
                 <nav aria-label="navigation">
                     <ul class="pagination pagination ">
-                        <li class="page-item rounded">
-                            <a class="page-link" style="font-size:0.8rem" aria-label="first link" ><span class="fas fa-angle-double-left"></span></a>
+                        <li class="page-item rounded" >
+                            <a class="page-link" @click="lastBtn" style="font-size:0.8rem"  ><span class="fas fa-angle-double-left"></span></a>
                         </li>
                         <li class="page-item rounded" @click="pageButton(i)" :class="{active:pageBtnIndex == i}" v-for="(item,i) in allPages" :key="i">
                             <a class="page-link" style="font-size:0.8rem" >{{i+1}}</a>
                         </li>
                         <li class="page-item rounded">
-                            <a class="page-link" style="font-size:0.8rem" aria-label="first link" ><span class="fas fa-angle-double-right"></span></a>
+                            <a class="page-link"  @click="nextBtn" style="font-size:0.8rem" ><span class="fas fa-angle-double-right"></span></a>
                         </li>
                     </ul>
                 </nav>
@@ -138,7 +138,9 @@
                 sort:-1,//降序排列数据
                 pageBtnIndex:0,
                 allPages:0,
-                gotoPage:1
+                gotoPage:1,
+                startDate:'',
+                endDate:''
              }
          },
          created(){
@@ -158,36 +160,79 @@
             });
          },
          methods:{
-             goPage(){
+             lastBtn(){
+                if(this.pageIndex == 1){
+                     return false
+                }else{
+                     this.pageIndex --
+                     this.pageBtnIndex --
+                     this.getData()
+                }
+             },
+             nextBtn(){
+                 if(this.pageIndex == this.allPages){
+                     return false
+                }else{
+                     this.pageIndex ++
+                     this.pageBtnIndex ++
+                     this.getData()
+                }
+             },
+             dateFilter(){//时间范围内查找
+                this.startDate = $('#startdate').data("datepicker").getDate();
+                this.endDate = $('#enddate').data("datepicker").getDate();
+                this.getData()
+             },
+             goPage(){//跳页
                 this.pageIndex = this.gotoPage;
                 this.getData()  
              },
-             pageButton(i){
+             pageButton(i){//点击页码
                 this.pageBtnIndex = i;
                 this.pageIndex = i+1;
                 this.getData()
              },
-             reSort(){
+             reSort(){//排序
                  this.sort == -1?this.sort = 1:this.sort = -1;
                  this.getData(this.sort)
              },
-             getData(sort,pageIndex,pageSize){
+             getData(sort){
                 this.tableData = [];
                 let url = '/api/profiles/getProfile/'
                 let params = {
                         sort:this.sort,
                         pageIndex:this.pageIndex,
-                        pageSize:parseInt(this.pageSize)
+                        pageSize:parseInt(this.pageSize),
+                        startDate:this.startDate,
+                        endDate:this.endDate
                     };
                 this.tableLoading = true;
                 this.$axios.post(url,params).then(res=>{
+                    console.log(res);
                     if(res.data){
-                        for(let i in res.data){
-                            let GMT = new Date(res.data[i].date);
-                            res.data[i].date = this.GMTToStr(GMT);
+                        for(let i in res.data.data){
+                            // res.data[i].date = new Date(res.data[i].date).valueOf();
+                            let timestamp  = new Date(res.data.data[i].date).valueOf();
+                            res.data.data[i].date = this.GMTToStr(timestamp);
                         }
+                        if(res.data.dateAllitems != -1){//按时间范围筛选时总数据数
+                            this.allItems = res.data.dateAllitems;
+                            //获取总页数
+                            this.allPages = Math.ceil(this.allItems/this.pageSize);
+                        }else{
+                            //获取数据总数量
+                            this.$axios.get('/api/profiles/allprofile/').then(res=>{
+                                if(res.status == 200)this.allItems = res.data;
+                                //获取总页数
+                                this.allPages = Math.ceil(this.allItems/this.pageSize);
+                            }).catch(err=>{
+                                    console.log(err);
+                                })
+                        }
+                         
+
                         this.tableLoading = false;
-                        this.tableData = res.data;
+                        this.tableData = res.data.data;
                     }else{
                         this.tableEmpty = true;
                     }
@@ -196,16 +241,7 @@
                     this.tableLoading = false;
                     console.log(err);
                 })
-                //获取数据总数量
-                this.$axios.get('/api/profiles/allprofile/').then(res=>{
-                    if(res.status == 200){
-                        this.allItems = res.data;
-                    }
-                    //获取总页数
-                    this.allPages = Math.ceil(this.allItems/this.pageSize);
-                }).catch(err=>{
-                        console.log(err);
-                    })
+                
              },
              editData(id,i){
                 this.showModalEdit = true;
