@@ -5,7 +5,6 @@
   "main": "serve.js",
   "scripts": {
     "start": "node serve.js",
-    "serve": "nodemon serve.js"
   },
   "author": "li",
   "license": "ISC",

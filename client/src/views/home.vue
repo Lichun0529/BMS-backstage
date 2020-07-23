@@ -3,13 +3,13 @@
             <H1>Fund Management System</H1><br>
             <p>Design&Make by LiChun</p>
             <ul class="d-flex list-unstyled mb-5 mb-lg-0">
-                 <li class="mr-2">
-                    <a href="http://li_chun529.gitee.io/blog/aboutme/" target="_blank" class="btn btn-icon-only btn-pill btn-primary" aria-label="github social link" data-toggle="tooltip" data-placement="top" title="" data-original-title="Open source projects">
+                <li class="mr-2">
+                    <a href="http://li_chun529.gitee.io/blog/aboutme/" target="_blank" class="btn btn-icon-only btn-pill btn-primary">
                         <span aria-hidden="true" class="fas fa-house-user"></span>
                     </a>
                 </li>
                 <li class="mr-2">
-                    <a href="https://github.com/Lichun0529" target="_blank" class="btn btn-icon-only btn-pill btn-primary" aria-label="github social link" data-toggle="tooltip" data-placement="top" title="" data-original-title="Open source projects">
+                    <a href="https://github.com/Lichun0529" target="_blank" class="btn btn-icon-only btn-pill btn-primary">
                         <span aria-hidden="true" class="fab fa-github"></span>
                     </a>
                 </li>
@@ -46,5 +46,8 @@
         right: 0;
         top: -3rem;
         bottom: 0;
+    }
+    ul{
+        z-index: 999;
     }
 </style>

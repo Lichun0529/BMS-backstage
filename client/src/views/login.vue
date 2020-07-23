@@ -90,8 +90,8 @@
                 password:'',
                 identity:'Please choose',
                 IdentityList:[
-                    {idt:'Employee'},
-                    {idt:'Administrators'}
+                    {idt:'employee'},
+                    {idt:'administrators'}
                 ],
             }
         },
@@ -142,6 +142,10 @@
                             this.showAlert = true;
                             this.showLoading = false;
                             document.body.scrollTop = document.documentElement.scrollTop = 0;//回顶部
+                        }else if(res.data.status == 0){
+                            this.alertStr = 'Email dosen\'t resigter';
+                            this.showAlert = true;
+                            this.showLoading = false;
                         }else if(res.data.token){
                             if(this.isRemember){
                                 let loginInfo = {
@@ -152,6 +156,11 @@
                                 }
                                 localStorage.setItem('loginInfo',JSON.stringify(loginInfo))
                             }
+                            //登录其他账户后清除remeber me
+                            if(localStorage.getItem('loginInfo')){
+                                let loginInfo = JSON.parse(localStorage.getItem('loginInfo'));
+                                if(loginInfo.email!=this.email) localStorage.removeItem('loginInfo');
+                            }
                             //本地储存token
                             localStorage.setItem('BMStoken',res.data.token)
                             //解析token并存储用户信息
@@ -160,6 +169,10 @@
                             this.$store.dispatch('setAuthenticated',isAuthenticated)
                             this.$store.dispatch('setUserInfo',userInfo)
                             this.$router.push('/index')
+                        }else{
+                            this.alertStr = 'Failed';
+                            this.showAlert = true;
+                            this.showLoading = false;
                         }
                     })
                 }

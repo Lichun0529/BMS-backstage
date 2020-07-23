@@ -7,7 +7,7 @@ const db = require('./config/keys').mongoURI;
 //[搭建路由模块] 6. 引入路由器
 const users = require('./routes/api/users');
 const profiles = require('./routes/api/profiles');
-
+const path  =require('path');
 //[搭建注册接口] 1.安装并引入body-parser
 const bodyParser = require('body-parser');
 //[验证token] 1.安装并引入passport
@@ -36,7 +36,13 @@ app.use('/api/profiles',profiles)
 app.use(passport.initialize())
 //把引入的passport传递给passport.js,把passport的配置抽离
 require('./config/passport')(passport)
-
+//生产环境下运行静态页面
+if(process.env.NODE_ENV === 'production'){
+    app.use(express.static('client/dist'));
+    app.get('*',(req,res)=>{
+        res.sendFile(path.resolve(__dirname,'client','dist','index.html'));
+    })
+}
 
 //[连接MongoDB] 3、连接数据库
 mongoose.connect(db,{ useUnifiedTopology: true })

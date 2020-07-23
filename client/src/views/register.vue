@@ -142,8 +142,8 @@
                 ariaExpanded:false,
                 identity:'Please choose',
                 IdentityList:[
-                    {idt:'Employee'},
-                    {idt:'Administrators'}
+                    {idt:'employee'},
+                    {idt:'administrators'}
                 ],
                 name:'',
                 email:'',
@@ -199,10 +199,15 @@
                         name:this.name,
                         email:this.email,
                         password:this.password,
-                        identity:this.identity
+                        identity:this.identity.toLowerCase()
                     }).then(res=>{
                         if(res.data.success == true){
                             this.showModal = true
+                            //登录其他账户后清除remeber me
+                            if(localStorage.getItem('loginInfo')){
+                                let loginInfo = JSON.parse(localStorage.getItem('loginInfo'));
+                                if(loginInfo.email!=this.email) localStorage.removeItem('loginInfo');
+                            }
                             //本地储存token
                             localStorage.setItem('BMStoken',res.data.token)
                             //解析token并存储用户信息
