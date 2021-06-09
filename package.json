@@ -4,7 +4,7 @@
   "description": "api",
   "main": "serve.js",
   "scripts": {
-    "start": "node serve.js",
+    "start": "node serve.js"
   },
   "author": "li",
   "license": "ISC",

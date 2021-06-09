@@ -109,7 +109,7 @@
         }
     }
     .card-body{
-        margin:0 1rem !important;
+        margin:10px 1rem !important;
         padding: 1rem 1.5rem ;
     }
     .card-body:hover{

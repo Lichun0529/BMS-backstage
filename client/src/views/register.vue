@@ -56,7 +56,7 @@
                                 <div class="toast-body">
                                     <ul>
                                         <li :class="checkPwd.r1?'text-through text-black-50':''">The password length must between <strong>8-16 characters</strong></li>
-                                        <li :class="checkPwd.r2?'text-through text-black-50':''">The password must contain at least <strong>1 lowercase alphabetical</strong></li>
+                                        <li :class="checkPwd.r2?'text-through text-black-50':''">The password must contain at least <strong>1 lowercase alphabetical character</strong></li>
                                         <li :class="checkPwd.r3?'text-through text-black-50':''">The password must contain at least <strong>1 uppercase alphabetical character</strong></li>
                                         <li :class="checkPwd.r4?'text-through text-black-50':''">The password must contain at least <strong>1 numeric character</strong></li>
                                     </ul>
