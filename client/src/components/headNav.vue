@@ -60,6 +60,7 @@
                  this.$router.push('userpage').catch(()=>{})
              },
              signOut(){
+                 localStorage.removeItem('BMStoken')
                  this.$router.push('login').catch(()=>{})
              }
          }

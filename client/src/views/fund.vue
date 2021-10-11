@@ -26,7 +26,7 @@
                     </button>
                 </div>
             </div>
-            <button v-if="user.identity == 'Administrators'" @click="showModalAdd = true" style="min-width: 5rem;" class="btn btn-primary btn-sm col-md-1 col-lg-1 col-xl-1 text-success" type="button" >
+            <button v-if="user.identity == 'administrators'" @click="showModalAdd = true" style="min-width: 5rem;" class="btn btn-primary btn-sm col-md-1 col-lg-1 col-xl-1 text-success" type="button" >
                 Add<span class="ml-2"><span class="fas fa-plus"></span></span>
             </button>
         </div>
@@ -45,7 +45,7 @@
                         <th class="border-0" width="5%" scope="col" id="expend">Expend</th>
                         <th class="border-0" width="7%" scope="col" id="cash">Cash</th>
                         <th class="border-0" width="26%" scope="col" id="remarks">Remarks</th>
-                        <th v-if="user.identity == 'Administrators'" class="border-0" style="min-width:8rem;" width="1%" scope="col" id="options">Options</th>
+                        <th v-if="user.identity == 'administrators'" class="border-0" style="min-width:8rem;" width="1%" scope="col" id="options">Options</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,7 +64,7 @@
                         <td class="text-danger" style="font-weight:700">-{{item.expend}}</td>
                         <td >{{item.cash}}</td>
                         <td >{{item.remark}}</td>
-                        <td v-if="user.identity == 'Administrators'">
+                        <td v-if="user.identity == 'administrators'">
                             <button @click="editData(item._id,i)" class="btn btn-sm  btn-primary text-info mr-2" style="" type="button">
                                 <span class="far fa-edit ml-1"></span>
                             </button>
