@@ -3,7 +3,7 @@ const router = express.Router();
 const axios = require("axios");
 
 router.post("/searchByLbs", (req, res) => {
-  const searchByLbs = {
+  const api = {
     url: "https://orders.kfc.com.cn/store-portal/api/v2/store/searchByLbs",
     param: {
       mylat: 39.95933151245117,
@@ -12,10 +12,10 @@ router.post("/searchByLbs", (req, res) => {
     method: "POST",
   };
   const http = axios.create({
-    headers: searchByLbs.headers,
+    headers: api.headers,
   });
   http
-    .post(searchByLbs.url, req.body)
+    .post(api.url, req.body)
     .then((data) => {
       res.json(data.data);
     })
@@ -23,5 +23,23 @@ router.post("/searchByLbs", (req, res) => {
       console.error(error);
     });
 });
-
+router.post("/validStore", (req, res) => {
+  const api = {
+    url: "https://orders.kfc.com.cn/store-portal/api/v2/store/validStore",
+    param: {
+      storeCode: req.body.storeCode,
+    },
+  };
+  const http = axios.create({
+    headers: api.headers,
+  });
+  http
+    .post(api.url, req.body)
+    .then((data) => {
+      res.json(data.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
 module.exports = router;
