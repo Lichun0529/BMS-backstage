@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-
+const imgUrlBase = "https://pcp-pic.hwwt8.com";
 const commonParam = {
   portalType: "WAP",
   channelName: "WECHATMINI",
@@ -13,7 +13,13 @@ const commonParam = {
   versionNum: "4",
   openId: "omxHq0O92oOuiOE8zhRCx9j9QJqk",
 };
+let localSession = {};
 
+/**
+ * 根据经纬度搜索门店
+ * @param {number} mylat 纬度
+ * @param {number} mylng 经度
+ */
 router.post("/searchByLbs", (req, res) => {
   const api = {
     url: "https://orders.kfc.com.cn/store-portal/api/v2/store/searchByLbs",
@@ -35,6 +41,11 @@ router.post("/searchByLbs", (req, res) => {
       console.error(error);
     });
 });
+
+/**
+ * 根据门店编号获取门店菜单
+ * @param {string} storeCode 门店编号
+ */
 router.post("/storeMenu", async (req, res) => {
   const api = {
     url: "https://orders.kfc.com.cn/store-portal/api/v2/store/validStore",
@@ -42,29 +53,40 @@ router.post("/storeMenu", async (req, res) => {
       storeCode: req.body.storeCode,
     },
   };
+  if (!req.body.storeCode) {
+    res.json({ code: 1, message: "门店编号不能为空" });
+    return;
+  }
   const http = axios.create({
     headers: api.headers,
   });
   const store = (await http.post(api.url, req.body)).data.data ?? null;
-  const menu = await getMenu({}, store);
-  res.json(menu.data);
+  getMenu(
+    res,
+    {
+      sessionId: localSession.sessionId,
+      ticket: localSession.ticket,
+    },
+    store
+  );
 });
-async function getMenu(param, store) {
+async function getMenu(res, param, store) {
+  if (!store || !store.store) {
+    res.json({ code: 1, message: "门店信息获取失败" });
+    return;
+  }
   const p = {
     ...commonParam,
     store: store.store,
     env: "qcb",
-    sessionId: param.sessionId
-      ? param.sessionId
-      : "pU02BDLkqPMWmpscKTns9Tg3DopdOWqv",
-    ticket: param.ticket
-      ? param.ticket
-      : "3f00cfa71fec88db_18c57eed8b7_18c7bc64bdd_LD8W3dJB92klFz-h.8pVuS-478-I5aW754kZxchtPabEoRl3l6kJjg",
+    sessionId: param.sessionId,
+    ticket: param.ticket,
   };
   let menu = await axios
     .create()
     .post("https://orders.kfc.com.cn/store-portal/api/v2//menu/list", p);
-  if (menu.data.code === 120000999) {
+  console.log(menu.data);
+  if (menu.data.code != 0) {
     //session过期
     const session = await axios
       .create()
@@ -76,11 +98,13 @@ async function getMenu(param, store) {
             "56c8a2821f8189f6_18c57eed8b7_18c7bd7108c_LD8W3dJB92klFz-h.8pVuS-478-I5aW754kZxchtPabEoRl3l6kJjg",
         }
       );
-    if (
-      session?.data?.data?.sessionId &&
-      session?.data?.data?.dataLogin?.user?.ticket[0]
-    ) {
+    if (session.data.code == 0) {
+      localSession = {
+        sessionId: session?.data?.data?.sessionId,
+        ticket: session?.data?.data?.dataLogin?.user?.ticket[0],
+      };
       menu = await getMenu(
+        res,
         {
           sessionId: session?.data?.data?.sessionId,
           ticket: session?.data?.data?.dataLogin?.user?.ticket[0],
@@ -88,9 +112,9 @@ async function getMenu(param, store) {
         store
       );
     } else {
-      console.log("session获取失败");
+      return res.json({ code: 1, message: "session获取失败" });
     }
   }
-  return menu;
+  return res.json(menu.data);
 }
 module.exports = router;
